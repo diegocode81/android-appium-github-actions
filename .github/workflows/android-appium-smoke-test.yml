@@ -49,12 +49,7 @@ jobs:
           echo "Installed Appium drivers:"
           appium driver list --installed
 
-      - name: Start Appium server
-        run: |
-          appium --log appium.log --relaxed-security --address 127.0.0.1 --port 4723 > appium-server.log 2>&1 &
-          sleep 10
-
-      - name: Start emulator and run Appium tests
+      - name: Run Android Appium smoke test
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -66,24 +61,31 @@ jobs:
           script: |
             mkdir -p artifacts/appium
 
+            echo "Checking connected devices..."
             adb devices
 
-            if [ ! -f apps/android/urpipro.apk ]; then
-              echo "Missing APK: apps/android/urpipro.apk"
+            echo "Checking APK file..."
+            if [ ! -f "apps/android/urpipro.apk" ]; then
+              echo "APK not found at apps/android/urpipro.apk"
+              echo "Repository files:"
+              find . -maxdepth 4 -type f | sort
               exit 1
             fi
 
+            echo "APK found:"
+            ls -lh apps/android/urpipro.apk
+
+            echo "Installing APK..."
             adb install -r apps/android/urpipro.apk
-            adb exec-out screencap -p > artifacts/appium/before-test.png
 
-            set +e
-            TAGS="${{ github.event.inputs.tags }}" CI=true npm run test:android:ci
-            TEST_EXIT_CODE=$?
-            set -e
+            echo "Starting Appium server..."
+            appium --base-path /wd/hub --log-level info > artifacts/appium/appium.log 2>&1 &
 
-            adb exec-out screencap -p > artifacts/appium/after-test.png || true
+            echo "Waiting for Appium server..."
+            npx wait-on http://127.0.0.1:4723/wd/hub/status --timeout 60000
 
-            exit $TEST_EXIT_CODE
+            echo "Running WDIO tests..."
+            npm run test:android
 
       - name: Upload Appium mobile test evidence
         if: always()
