@@ -14,11 +14,9 @@ jobs:
 
       - name: Enable KVM
         run: |
-          echo "Enabling KVM access for Android Emulator..."
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-          echo "KVM permissions configured."
 
       - name: Start emulator and run smoke checks
         uses: reactivecircus/android-emulator-runner@v2
@@ -32,24 +30,48 @@ jobs:
           script: |
             echo "Android emulator boot completed."
 
-            echo "Listing connected adb devices..."
+            echo "Creating emulator artifact directory..."
+            mkdir -p artifacts/emulator
+
+            echo "Listing connected devices..."
             adb devices
 
-            echo "Reading Android version..."
+            echo "Android version:"
             adb shell getprop ro.build.version.release
 
-            echo "Reading emulator device model..."
+            echo "Device model:"
             adb shell getprop ro.product.model
 
-            echo "Checking animation scale setting..."
-            adb shell settings get global window_animation_scale
+            echo "Unlocking emulator screen..."
+            adb shell input keyevent 82 || true
 
-            echo "Sending unlock/menu keyevent to emulator..."
-            adb shell input keyevent 82
+            echo "Waiting for launcher..."
+            sleep 5
 
-            echo "Confirming emulator command execution..."
-            adb shell echo "Android emulator is running successfully"
+            echo "Capturing emulator home screen..."
+            adb exec-out screencap -p > artifacts/emulator/emulator-home-screen.png
+
+            echo "Writing emulator device information..."
+            {
+              echo "Android Emulator Smoke Test"
+              echo "Date: $(date)"
+              echo "Android version: $(adb shell getprop ro.build.version.release)"
+              echo "Device model: $(adb shell getprop ro.product.model)"
+              echo "Device manufacturer: $(adb shell getprop ro.product.manufacturer)"
+              echo "SDK: $(adb shell getprop ro.build.version.sdk)"
+              echo "ADB devices:"
+              adb devices
+            } > artifacts/emulator/device-info.txt
+
+            echo "Generated emulator artifacts:"
+            ls -lah artifacts/emulator
+
+      - name: Upload emulator visual evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-emulator-visual-evidence
+          path: artifacts/emulator
 
       - name: Confirm POC completion
         run: |
-          echo "POC completed: Android emulator started successfully"
+          echo "POC completed: Android emulator started and visual evidence was uploaded."
