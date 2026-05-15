@@ -306,12 +306,6 @@ El workflow hace:
 - Captura screenshots antes y despues de la prueba.
 - Ejecuta `TAGS="<input>" CI=true npm run test:android:ci`.
 
-El workflow POC de fase 1 se mantiene sin cambios:
-
-```text
-.github/workflows/android-emulator-smoke-test.yml
-```
-
 ## Reportes y Artifacts
 
 El reporte Word del arquetipo se genera en:
