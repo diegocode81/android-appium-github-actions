@@ -12,10 +12,6 @@ on:
           - "@urpiproLogin"
           - "@simularCredito"
           - "@validarClientesPorADN"
-          - "@urpiproLogin or @simularCredito"
-          - "@urpiproLogin or @validarClientesPorADN"
-          - "@simularCredito or @validarClientesPorADN"
-          - "@urpiproLogin or @simularCredito or @validarClientesPorADN"
 
 jobs:
   android-appium-smoke-test:
