@@ -51,6 +51,21 @@ jobs:
             echo "Capturing emulator home screen..."
             adb exec-out screencap -p > artifacts/emulator/emulator-home-screen.png
 
+            echo "Saving installed packages..."
+            adb shell pm list packages > artifacts/emulator/installed-packages.txt
+
+            echo "Checking Settings package..."
+            adb shell pm list packages | grep "com.android.settings"
+
+            echo "Opening Android Settings app..."
+            adb shell am start -a android.settings.SETTINGS
+
+            echo "Waiting for Settings app..."
+            sleep 5
+
+            echo "Capturing Settings app screen..."
+            adb exec-out screencap -p > artifacts/emulator/emulator-settings-screen.png
+
             echo "Writing emulator device information..."
             echo "Android Emulator Smoke Test" > artifacts/emulator/device-info.txt
             echo "Date: $(date)" >> artifacts/emulator/device-info.txt
@@ -58,6 +73,8 @@ jobs:
             echo "Device model: $(adb shell getprop ro.product.model)" >> artifacts/emulator/device-info.txt
             echo "Device manufacturer: $(adb shell getprop ro.product.manufacturer)" >> artifacts/emulator/device-info.txt
             echo "SDK: $(adb shell getprop ro.build.version.sdk)" >> artifacts/emulator/device-info.txt
+            echo "Native app opened: com.android.settings" >> artifacts/emulator/device-info.txt
+            echo "Settings screenshot: emulator-settings-screen.png" >> artifacts/emulator/device-info.txt
             echo "ADB devices:" >> artifacts/emulator/device-info.txt
             adb devices >> artifacts/emulator/device-info.txt
 

@@ -4,11 +4,11 @@ POC para validar automatizacion mobile QA con GitHub Actions, Android Emulator y
 
 ## Objetivo de la POC
 
-Crear la base minima para comprobar que GitHub Actions puede iniciar un emulador Android en un runner Linux y generar evidencia visual descargable.
+Crear la base minima para comprobar que GitHub Actions puede iniciar un emulador Android en un runner Linux, abrir una app nativa instalada y generar evidencia visual descargable.
 
 Esta primera fase no instala APKs, no levanta Appium y no ejecuta pruebas automatizadas.
 
-## Que valida esta primera fase
+## Que valida esta fase 1.1
 
 El workflow `Android Emulator Smoke Test` valida que GitHub Actions puede:
 
@@ -20,7 +20,11 @@ El workflow `Android Emulator Smoke Test` valida que GitHub Actions puede:
 - Imprimir la version de Android.
 - Imprimir el modelo del dispositivo emulado.
 - Ejecutar comandos basicos de smoke test contra el emulador.
-- Generar una captura de pantalla del emulador.
+- Generar una captura de pantalla del home del emulador.
+- Listar paquetes instalados en el emulador.
+- Validar que existe la app nativa Settings.
+- Abrir la app nativa Settings sin instalar una APK externa.
+- Generar una captura de pantalla de Settings.
 - Subir evidencia visual como artifact de GitHub Actions.
 - Finalizar exitosamente la POC.
 
@@ -48,7 +52,7 @@ Configuracion principal:
 
 El emulador se ejecuta en modo headless porque GitHub Actions corre en un runner remoto. No se puede ver una ventana visual en vivo del emulador desde la interfaz de GitHub Actions.
 
-Para tener evidencia visual, el workflow genera una captura llamada `emulator-home-screen.png` y la sube como artifact junto con `device-info.txt`.
+Para tener evidencia visual, el workflow genera capturas llamadas `emulator-home-screen.png` y `emulator-settings-screen.png`, y las sube como artifact junto con `device-info.txt` e `installed-packages.txt`.
 
 ## Como ejecutar el workflow manualmente
 
@@ -71,6 +75,10 @@ Al ejecutar el workflow, los logs de GitHub Actions deben mostrar:
 - Version de Android impresa desde `ro.build.version.release`.
 - Modelo del dispositivo impreso desde `ro.product.model`.
 - Generacion de `emulator-home-screen.png`.
+- Generacion de `installed-packages.txt`.
+- Validacion del paquete `com.android.settings`.
+- Apertura de la app Settings.
+- Generacion de `emulator-settings-screen.png`.
 - Generacion de `device-info.txt`.
 - Upload del artifact `android-emulator-visual-evidence`.
 - Mensaje final `POC completed: Android emulator started and visual evidence was uploaded.`
@@ -78,7 +86,11 @@ Al ejecutar el workflow, los logs de GitHub Actions deben mostrar:
 El artifact `android-emulator-visual-evidence` se descarga desde la pagina de la ejecucion del workflow en GitHub Actions. Dentro debe contener:
 
 - `emulator-home-screen.png`
+- `emulator-settings-screen.png`
 - `device-info.txt`
+- `installed-packages.txt`
+
+Esta sigue siendo una POC Fase 1.1: no instala APK externa, no levanta Appium y no ejecuta pruebas automatizadas.
 
 ## Proximas fases
 
