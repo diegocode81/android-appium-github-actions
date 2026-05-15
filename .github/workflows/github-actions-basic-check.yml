@@ -1,0 +1,14 @@
+name: GitHub Actions Basic Check
+
+on:
+  workflow_dispatch:
+
+jobs:
+  basic-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print runner info
+        run: |
+          echo "GitHub Actions is working"
+          uname -a
