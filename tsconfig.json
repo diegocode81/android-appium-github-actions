@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+
+    "strict": false,
+    "skipLibCheck": true,
+
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+
+    "baseUrl": ".",
+    "types": ["node", "@wdio/globals/types", "@wdio/cucumber-framework"],
+
+    "outDir": "./dist"
+  },
+  "include": ["wdio.conf.ts", "features/**/*.ts", "features/support/expand-csv-examples.js"]
+}

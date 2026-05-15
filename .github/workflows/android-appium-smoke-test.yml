@@ -1,0 +1,87 @@
+name: Android Appium Smoke Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: "Cucumber tags to execute"
+        required: false
+        default: "@urpiproLogin"
+
+jobs:
+  android-appium-smoke-test:
+    name: Run Appium smoke tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Appium and UiAutomator2
+        run: |
+          npm install -g appium@2
+          appium driver install uiautomator2
+
+      - name: Start Appium server
+        run: |
+          appium --log appium.log --relaxed-security --address 127.0.0.1 --port 4723 > appium-server.log 2>&1 &
+          sleep 10
+
+      - name: Start emulator and run Appium tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: |
+            mkdir -p artifacts/appium
+
+            adb devices
+
+            if [ ! -f apps/android/urpipro.apk ]; then
+              echo "Missing APK: apps/android/urpipro.apk"
+              exit 1
+            fi
+
+            adb install -r apps/android/urpipro.apk
+            adb exec-out screencap -p > artifacts/appium/before-test.png
+
+            set +e
+            TAGS="${{ github.event.inputs.tags }}" CI=true npm run test:android:ci
+            TEST_EXIT_CODE=$?
+            set -e
+
+            adb exec-out screencap -p > artifacts/appium/after-test.png || true
+
+            exit $TEST_EXIT_CODE
+
+      - name: Upload Appium mobile test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: appium-mobile-test-evidence
+          path: |
+            appium-server.log
+            appium.log
+            artifacts/appium
+            reporte-mibanco
+            reports
+            allure-results
