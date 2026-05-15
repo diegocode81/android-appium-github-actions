@@ -142,10 +142,14 @@ function androidCiCaps(): WebdriverIO.Capabilities {
     "appium:platformVersion": "15",
     "appium:app": path.resolve(process.cwd(), "apps/android/urpipro.apk"),
     "appium:autoGrantPermissions": true,
+    "appium:chromedriverAutodownload": true,
+    "appium:autoWebview": false,
+    "appium:ensureWebviewsHavePages": true,
+    "appium:nativeWebScreenshot": true,
     "appium:newCommandTimeout": 120,
     "appium:noReset": false,
     "appium:disableWindowAnimation": true,
-  };
+  } as any;
 }
 
 export function androidCaps(): WebdriverIO.Capabilities {
@@ -171,6 +175,7 @@ export function androidCaps(): WebdriverIO.Capabilities {
     // ✅ permisos
     "appium:autoGrantPermissions": true,
     "appium:nativeWebScreenshot": true,
+    "appium:chromedriverAutodownload": true,
     // ✅ manejo de estado
     "appium:noReset": true,
     "appium:fullReset": false,
@@ -179,7 +184,7 @@ export function androidCaps(): WebdriverIO.Capabilities {
     "appium:chromedriverExecutableDir": CHROMEDRIVER_DIR,
     "appium:chromedriverDisableBuildCheck": false,
     "appium:enableWebviewDetailsCollection": true,
-    "appium:ensureWebviewsHavePages": false,
+    "appium:ensureWebviewsHavePages": true,
     "appium:showChromedriverLog": true,
     "appium:autoWebview": false,
     "appium:webviewConnectTimeout": 240000,

@@ -73,13 +73,20 @@ jobs:
             adb install -r apps/android/urpipro.apk
 
             echo "Starting Appium server..."
-            appium --address 127.0.0.1 --port 4723 --log-level info > artifacts/appium/appium.log 2>&1 &
+            export APPIUM_ALLOW_INSECURE=chromedriver_autodownload
+            appium --address 127.0.0.1 --port 4723 --allow-insecure chromedriver_autodownload --log-level info > artifacts/appium/appium.log 2>&1 &
 
             echo "Waiting for Appium server..."
             npx wait-on http://127.0.0.1:4723/status --timeout 60000
 
             echo "Appium status:"
             curl -s http://127.0.0.1:4723/status || true
+
+            echo "Chrome package version:"
+            adb shell dumpsys package com.android.chrome | grep versionName || true
+
+            echo "Android WebView update status:"
+            adb shell dumpsys webviewupdate || true
 
             echo "Running WDIO tests..."
             npm run test:android
