@@ -60,17 +60,11 @@ jobs:
           disable-animations: true
           script: |
             mkdir -p artifacts/appium
-
             echo "Checking connected devices..."
             adb devices
 
             echo "Checking APK file..."
-            if [ ! -f "apps/android/urpipro.apk" ]; then
-              echo "APK not found at apps/android/urpipro.apk"
-              echo "Repository files:"
-              find . -maxdepth 4 -type f | sort
-              exit 1
-            fi
+            test -f "apps/android/urpipro.apk" || (echo "APK not found at apps/android/urpipro.apk" && find . -maxdepth 4 -type f | sort && exit 1)
 
             echo "APK found:"
             ls -lh apps/android/urpipro.apk
