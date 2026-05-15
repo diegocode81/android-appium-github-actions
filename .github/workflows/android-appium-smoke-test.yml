@@ -73,10 +73,13 @@ jobs:
             adb install -r apps/android/urpipro.apk
 
             echo "Starting Appium server..."
-            appium --base-path /wd/hub --log-level info > artifacts/appium/appium.log 2>&1 &
+            appium --address 127.0.0.1 --port 4723 --log-level info > artifacts/appium/appium.log 2>&1 &
 
             echo "Waiting for Appium server..."
-            npx wait-on http://127.0.0.1:4723/wd/hub/status --timeout 60000
+            npx wait-on http://127.0.0.1:4723/status --timeout 60000
+
+            echo "Appium status:"
+            curl -s http://127.0.0.1:4723/status || true
 
             echo "Running WDIO tests..."
             npm run test:android
