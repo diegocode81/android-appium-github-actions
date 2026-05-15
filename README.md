@@ -40,13 +40,11 @@ npm install
 Los drivers de Appium están declarados como dependencias del proyecto:
 
 - `appium-uiautomator2-driver`
-- `appium-xcuitest-driver`
 
-Si se usa Appium global, instalar drivers manualmente:
+Si se usa Appium global para Android en CI, instalar el driver compatible con Appium 2:
 
 ```bash
-appium driver install uiautomator2
-appium driver install xcuitest
+appium driver install uiautomator2@4.2.9
 ```
 
 ## Librerías principales
@@ -54,7 +52,6 @@ appium driver install xcuitest
 ```text
 appium                         Servidor de automatización móvil.
 appium-uiautomator2-driver     Driver Android para Appium.
-appium-xcuitest-driver         Driver iOS para Appium.
 @wdio/cli                      CLI de WebdriverIO.
 @wdio/local-runner             Runner local de WebdriverIO.
 @wdio/cucumber-framework       Integración Cucumber/Gherkin con WDIO.

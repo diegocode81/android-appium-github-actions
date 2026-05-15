@@ -52,7 +52,6 @@
     "allure-commandline": "^2.34.1",
     "appium": "^3.0.0",
     "appium-uiautomator2-driver": "^5.0.0",
-    "appium-xcuitest-driver": "^10.0.0",
     "chromedriver": "^143.0.3",
     "cross-env": "^10.0.0",
     "csv-parse": "^6.1.0",

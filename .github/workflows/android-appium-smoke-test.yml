@@ -32,29 +32,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Appium and UiAutomator2
+      - name: Install Appium and Android driver
         run: |
           npm install -g appium@2.19.0
 
-          echo "Installed Appium version:"
+          echo "Appium version:"
           appium --version
 
-          echo "Currently installed Appium drivers:"
-          appium driver list --installed
+          echo "Cleaning previous Appium drivers..."
+          appium driver uninstall uiautomator2 || true
+          appium driver uninstall xcuitest || true
 
-          if appium driver list --installed | grep -q "uiautomator2"; then
-            echo "UiAutomator2 driver is already installed. Reinstalling compatible version..."
-            appium driver uninstall uiautomator2 || true
-          else
-            echo "UiAutomator2 driver is not installed."
-          fi
-
-          echo "Installing UiAutomator2 driver compatible with Appium 2..."
+          echo "Installing UiAutomator2 compatible with Appium 2..."
           appium driver install uiautomator2@4.2.9
 
-          echo "Final installed Appium drivers:"
+          echo "Installed Appium drivers:"
           appium driver list --installed
-          appium driver doctor uiautomator2 || true
 
       - name: Start Appium server
         run: |
