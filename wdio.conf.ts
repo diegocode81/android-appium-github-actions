@@ -5,7 +5,7 @@ import * as path from "path";
 import { execSync } from "node:child_process";
 
 const isCI = process.env.CI === "true";
-const cucumberTags = normalizeTagsExpr(process.env.TAGS || "");
+const cucumberTags = normalizeTagsExpr(process.env.TAGS || "@urpiproLogin");
 
 // Select target via env var: TARGET=ios | TARGET=android (default: android)
 const TARGET = (process.env.TARGET || "android").toLowerCase();
@@ -36,6 +36,10 @@ function firstTag(tagsExpr: string): string {
 function isGenericTag(tag: string): boolean {
   const generic = new Set(["@urpipro", "@ios", "@android"]);
   return generic.has(tag.toLowerCase());
+}
+
+function hasTagExpressionOperators(tagsExpr: string): boolean {
+  return /\b(and|or|not)\b|[()]/i.test(tagsExpr);
 }
 
 function findFeatureByName(
@@ -105,11 +109,12 @@ function findFeaturesByTag(rootDir: string, tag: string): string[] {
  * ✅ Decide los specs ANTES de que WDIO cree workers, usando TAGS.
  */
 function computeSpecs(): string[] {
-  const tagsExpr = normalizeTagsExpr(process.env.TAGS || "");
+  const tagsExpr = cucumberTags;
   const tag = firstTag(tagsExpr);
 
   const globSpecs = [path.join(FEATURES_DIR, "**/*.feature")];
 
+  if (hasTagExpressionOperators(tagsExpr)) return globSpecs;
   if (!tag || isGenericTag(tag)) return globSpecs;
 
   const featureName = tag.replace("@", "");
@@ -242,8 +247,8 @@ const config: WebdriverIO.Config = {
     timeout: 180_000,
     strict: true,
     tagsInTitle: true,
-    tags: cucumberTags || undefined,
-    tagExpression: cucumberTags || undefined,
+    tags: cucumberTags,
+    tagExpression: cucumberTags,
   } as any,
 
   reporters: [

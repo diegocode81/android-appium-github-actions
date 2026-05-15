@@ -3,10 +3,19 @@ name: Android Appium Smoke Test
 on:
   workflow_dispatch:
     inputs:
-      tags:
+      cucumber_tags:
         description: "Cucumber tags to execute"
-        required: false
+        required: true
         default: "@urpiproLogin"
+        type: choice
+        options:
+          - "@urpiproLogin"
+          - "@simularCredito"
+          - "@validarClientesPorADN"
+          - "@urpiproLogin or @simularCredito"
+          - "@urpiproLogin or @validarClientesPorADN"
+          - "@simularCredito or @validarClientesPorADN"
+          - "@urpiproLogin or @simularCredito or @validarClientesPorADN"
 
 jobs:
   android-appium-smoke-test:
@@ -51,6 +60,8 @@ jobs:
 
       - name: Run Android Appium smoke test
         uses: reactivecircus/android-emulator-runner@v2
+        env:
+          TAGS: ${{ github.event.inputs.cucumber_tags }}
         with:
           api-level: 35
           target: google_apis
@@ -88,6 +99,7 @@ jobs:
             echo "Android WebView update status:"
             adb shell dumpsys webviewupdate || true
 
+            echo "Selected Cucumber tags: $TAGS"
             echo "Running WDIO tests..."
             npm run test:android
 
