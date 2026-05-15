@@ -35,7 +35,16 @@ jobs:
       - name: Install Appium and UiAutomator2
         run: |
           npm install -g appium@2
-          appium driver install uiautomator2
+          appium driver list --installed
+
+          if appium driver list --installed | grep -q "uiautomator2"; then
+            echo "UiAutomator2 driver is already installed."
+          else
+            echo "Installing UiAutomator2 driver..."
+            appium driver install uiautomator2
+          fi
+
+          appium driver list --installed
 
       - name: Start Appium server
         run: |
