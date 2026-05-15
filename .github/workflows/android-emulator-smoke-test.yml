@@ -52,16 +52,14 @@ jobs:
             adb exec-out screencap -p > artifacts/emulator/emulator-home-screen.png
 
             echo "Writing emulator device information..."
-            {
-              echo "Android Emulator Smoke Test"
-              echo "Date: $(date)"
-              echo "Android version: $(adb shell getprop ro.build.version.release)"
-              echo "Device model: $(adb shell getprop ro.product.model)"
-              echo "Device manufacturer: $(adb shell getprop ro.product.manufacturer)"
-              echo "SDK: $(adb shell getprop ro.build.version.sdk)"
-              echo "ADB devices:"
-              adb devices
-            } > artifacts/emulator/device-info.txt
+            echo "Android Emulator Smoke Test" > artifacts/emulator/device-info.txt
+            echo "Date: $(date)" >> artifacts/emulator/device-info.txt
+            echo "Android version: $(adb shell getprop ro.build.version.release)" >> artifacts/emulator/device-info.txt
+            echo "Device model: $(adb shell getprop ro.product.model)" >> artifacts/emulator/device-info.txt
+            echo "Device manufacturer: $(adb shell getprop ro.product.manufacturer)" >> artifacts/emulator/device-info.txt
+            echo "SDK: $(adb shell getprop ro.build.version.sdk)" >> artifacts/emulator/device-info.txt
+            echo "ADB devices:" >> artifacts/emulator/device-info.txt
+            adb devices >> artifacts/emulator/device-info.txt
 
             echo "Generated emulator artifacts:"
             ls -lah artifacts/emulator
