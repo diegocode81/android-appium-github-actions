@@ -46,7 +46,6 @@ jobs:
 
           echo "Cleaning previous Appium drivers..."
           appium driver uninstall uiautomator2 || true
-          appium driver uninstall xcuitest || true
 
           echo "Installing UiAutomator2 compatible with Appium 2..."
           appium driver install uiautomator2@4.2.9
